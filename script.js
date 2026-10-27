@@ -1,382 +1,277 @@
-document.addEventListener("DOMContentLoaded", () => {
-  
-  /* ==========================================================================
-     1. SKILLS FILTERING LOGIC
-     ========================================================================== */
-  const filterButtons = document.querySelectorAll(".filter-btn");
-  const skillTags = document.querySelectorAll(".skill-tag");
+(function () {
+  const root = document.documentElement;
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  filterButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      // Toggle active button styling
-      filterButtons.forEach(btn => btn.classList.remove("active"));
-      button.classList.add("active");
-
-      const filterValue = button.getAttribute("data-filter");
-
-      // Filter tags with animation
-      skillTags.forEach(tag => {
-        const category = tag.getAttribute("data-category");
-        if (filterValue === "all" || category === filterValue) {
-          tag.classList.remove("hidden");
-        } else {
-          tag.classList.add("hidden");
-        }
-      });
-    });
+  /* ---------- theme ---------- */
+  const toggle = document.querySelector(".theme-toggle");
+  toggle.addEventListener("click", () => {
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    root.dataset.theme = next;
+    try { localStorage.setItem("theme", next); } catch (e) {}
+    lattice.refreshColors();
+    background.refreshColors();
+    document.dispatchEvent(new Event("themechange"));
   });
 
-  /* ==========================================================================
-     2. INTERACTIVE TRADING SIMULATOR
-     ========================================================================== */
-  const canvas = document.getElementById("sim-canvas");
-  const ctx = canvas.getContext("2d");
-  const btnMomentum = document.getElementById("btn-strategy-momentum");
-  const btnReversion = document.getElementById("btn-strategy-reversion");
-  const returnMetric = document.getElementById("sim-metric-return");
-  const sharpeMetric = document.getElementById("sim-metric-sharpe");
-  const tradesMetric = document.getElementById("sim-metric-trades");
-
-  // Simulation Parameters
-  let activeStrategy = "momentum"; // "momentum" or "reversion"
-  let priceData = [];
-  let shortSMA = [];
-  let longSMA = [];
-  let trades = []; // Array of { type: "BUY"|"SELL", price: number, index: number }
-  
-  let currentPosition = 0; // 0 = cash, 1 = long
-  let cash = 10000;
-  let shares = 0;
-  let entryPrice = 0;
-  let equityHistory = [];
-  let tradeReturns = []; // Array of percentage returns per closed trade
-  
-  const maxPoints = 80;
-  let priceIndex = 0;
-  let simTimer = null;
-
-  // Initialize Canvas Size
-  function resizeCanvas() {
-    const rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
+  /* ---------- header state + reading progress ---------- */
+  const header = document.querySelector(".top");
+  const progress = document.querySelector(".progress");
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const max = root.scrollHeight - innerHeight;
+      progress.style.setProperty("--p", max > 0 ? scrollY / max : 0);
+      header.classList.toggle("scrolled", scrollY > 8);
+      ticking = false;
+    });
   }
-  
-  window.addEventListener("resize", resizeCanvas);
-  resizeCanvas();
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
 
-  // Price Generation (Random walk with slight upward drift & noise)
-  let lastPrice = 100;
-  function generateNextPrice() {
-    const drift = 0.05; // upward drift
-    const volatility = 1.8; // standard deviation of returns
-    const rand = (Math.random() - 0.48); // slightly biased positive
-    const returnVal = drift + (rand * volatility);
-    lastPrice = lastPrice * (1 + returnVal / 100);
-    if (lastPrice < 10) lastPrice = 10; // prevent negative prices
-    priceIndex++;
-    return lastPrice;
-  }
+  /* ---------- active section in nav ---------- */
+  const navLinks = new Map(
+    [...document.querySelectorAll(".top nav a")].map(a => [a.getAttribute("href").slice(1), a])
+  );
+  const spy = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      navLinks.forEach(a => a.classList.remove("active"));
+      const link = navLinks.get(e.target.id);
+      if (link) link.classList.add("active");
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  navLinks.forEach((_, id) => {
+    const el = document.getElementById(id);
+    if (el) spy.observe(el);
+  });
 
-  // Backtesting Indicators
-  function calculateSMA(data, period) {
-    if (data.length < period) return null;
-    const slice = data.slice(-period);
-    const sum = slice.reduce((a, b) => a + b, 0);
-    return sum / period;
-  }
-
-  function calculateStdDev(data, period, mean) {
-    if (data.length < period) return 0;
-    const slice = data.slice(-period);
-    const variance = slice.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / period;
-    return Math.sqrt(variance);
-  }
-
-  // Sharpe Ratio Calculation
-  function updateSharpeRatio() {
-    if (tradeReturns.length < 2) {
-      sharpeMetric.textContent = activeStrategy === "momentum" ? "1.82" : "2.14"; // realistic fallbacks
-      return;
-    }
-    const mean = tradeReturns.reduce((a, b) => a + b, 0) / tradeReturns.length;
-    const variance = tradeReturns.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / tradeReturns.length;
-    const stdDev = Math.sqrt(variance);
-    if (stdDev === 0) {
-      sharpeMetric.textContent = "0.00";
-      return;
-    }
-    // Annualize Sharpe ratio assuming ~252 trading intervals
-    const sharpe = (mean / stdDev) * Math.sqrt(252);
-    // Bind to a realistic range to avoid crazy random walk outcomes
-    const boundedSharpe = Math.min(Math.max(sharpe, -1.5), 3.8);
-    sharpeMetric.textContent = boundedSharpe.toFixed(2);
-  }
-
-  // Reset Simulation State
-  function resetSimulation(strategy) {
-    activeStrategy = strategy;
-    priceData = [];
-    shortSMA = [];
-    longSMA = [];
-    trades = [];
-    currentPosition = 0;
-    cash = 10000;
-    shares = 0;
-    entryPrice = 0;
-    equityHistory = [];
-    tradeReturns = [];
-    lastPrice = 100;
-    priceIndex = 0;
-
-    // Pre-populate with some initial data so the chart isn't blank
-    for (let i = 0; i < 40; i++) {
-      const nextPrice = generateNextPrice();
-      priceData.push(nextPrice);
-      
-      const sSMA = calculateSMA(priceData, 8);
-      const lSMA = calculateSMA(priceData, 20);
-      shortSMA.push(sSMA);
-      longSMA.push(lSMA);
-      equityHistory.push(cash);
-    }
-    
-    // Update metrics UI
-    returnMetric.textContent = "+0.00%";
-    returnMetric.className = "metric-val return-positive";
-    tradesMetric.textContent = "0";
-    sharpeMetric.textContent = activeStrategy === "momentum" ? "1.82" : "2.14";
-
-    if (simTimer) clearInterval(simTimer);
-    simTimer = setInterval(tickSimulation, 200);
-  }
-
-  // Simulation step
-  function tickSimulation() {
-    const nextPrice = generateNextPrice();
-    
-    // Maintain max points
-    if (priceData.length >= maxPoints) {
-      priceData.shift();
-      shortSMA.shift();
-      longSMA.shift();
-      equityHistory.shift();
-      // Adjust trade indexes in history to align with shifting
-      trades.forEach(t => t.index--);
-      trades = trades.filter(t => t.index >= 0);
-    }
-
-    priceData.push(nextPrice);
-
-    // Compute indicators
-    const sSMA = calculateSMA(priceData, 8);
-    const lSMA = calculateSMA(priceData, 20);
-    shortSMA.push(sSMA);
-    longSMA.push(lSMA);
-
-    // Run Strategy Logic
-    if (sSMA && lSMA) {
-      if (activeStrategy === "momentum") {
-        // MA Crossover Strategy
-        if (sSMA > lSMA && currentPosition === 0) {
-          // BUY Signal
-          currentPosition = 1;
-          entryPrice = nextPrice;
-          shares = cash / nextPrice;
-          cash = 0;
-          trades.push({ type: "BUY", price: nextPrice, index: priceData.length - 1 });
-        } else if (sSMA < lSMA && currentPosition === 1) {
-          // SELL Signal
-          currentPosition = 0;
-          cash = shares * nextPrice;
-          shares = 0;
-          const pctReturn = ((nextPrice - entryPrice) / entryPrice) * 100;
-          tradeReturns.push(pctReturn);
-          trades.push({ type: "SELL", price: nextPrice, index: priceData.length - 1 });
-          tradesMetric.textContent = tradeReturns.length.toString();
-          updateSharpeRatio();
-        }
-      } else {
-        // Mean Reversion Strategy (Price relative to Bollinger-like band deviation)
-        const mean = calculateSMA(priceData, 15);
-        const stdDev = calculateStdDev(priceData, 15, mean);
-        const lowerBand = mean - 1.5 * stdDev;
-        const upperBand = mean + 1.5 * stdDev;
-
-        if (nextPrice < lowerBand && currentPosition === 0) {
-          // BUY - oversold
-          currentPosition = 1;
-          entryPrice = nextPrice;
-          shares = cash / nextPrice;
-          cash = 0;
-          trades.push({ type: "BUY", price: nextPrice, index: priceData.length - 1 });
-        } else if (nextPrice > upperBand && currentPosition === 1) {
-          // SELL - overbought
-          currentPosition = 0;
-          cash = shares * nextPrice;
-          shares = 0;
-          const pctReturn = ((nextPrice - entryPrice) / entryPrice) * 100;
-          tradeReturns.push(pctReturn);
-          trades.push({ type: "SELL", price: nextPrice, index: priceData.length - 1 });
-          tradesMetric.textContent = tradeReturns.length.toString();
-          updateSharpeRatio();
-        }
+  /* ---------- reveal on scroll ---------- */
+  const revealables = document.querySelectorAll("section > .entry, section > table, section > h2, .now");
+  const reveal = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("in");
+        reveal.unobserve(e.target);
       }
+    });
+  }, { rootMargin: "0px 0px -8% 0px" });
+  revealables.forEach(el => {
+    el.classList.add("reveal");
+    reveal.observe(el);
+  });
+
+  /* ---------- Fig. 1: metasurface lens ----------
+     Hexagonal lattice of nanopillars. Each pillar's radius encodes the
+     hyperbolic lens phase  phi(r) = k (sqrt(r^2 + f^2) - f)  mod 2pi,
+     centred on the focus point. Click switches between two design
+     wavelengths, as in the dual-wavelength mode of the real tool. */
+  const lattice = (function () {
+    const canvas = document.getElementById("lattice");
+    const readout = document.getElementById("lattice-readout");
+    const ctx = canvas.getContext("2d");
+
+    const PITCH_NM = 600;          // physical lattice pitch
+    const FOCAL_UM = 12;           // focal length
+    const WAVELENGTHS = [1550, 1310];
+    let wl = 0;
+
+    let W = 0, H = 0, dpr = 1, pitch = 18, pillars = [];
+    let ink = "#000", accent = "#f00";
+    const focus = { x: 0, y: 0 }, target = { x: 0, y: 0 };
+    let pointerInside = false, visible = true, running = false, t0 = performance.now();
+
+    function refreshColors() {
+      const cs = getComputedStyle(root);
+      ink = cs.getPropertyValue("--ink").trim();
+      accent = cs.getPropertyValue("--accent").trim();
+      if (!running) draw();
     }
 
-    // Compute current total equity
-    const currentEquity = currentPosition === 1 ? shares * nextPrice : cash;
-    equityHistory.push(currentEquity);
-    
-    // Update Return metric
-    const totalReturn = ((currentEquity - 10000) / 10000) * 100;
-    returnMetric.textContent = (totalReturn >= 0 ? "+" : "") + totalReturn.toFixed(2) + "%";
-    returnMetric.className = totalReturn >= 0 ? "metric-val return-positive" : "metric-val return-negative";
+    function layout() {
+      const rect = canvas.getBoundingClientRect();
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      W = rect.width; H = rect.height;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // Draw to canvas
-    drawSimulation();
-  }
-
-  // Draw chart onto HTML5 Canvas
-  function drawSimulation() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const width = canvas.width;
-    const height = canvas.height;
-    const padding = 20;
-    
-    const chartWidth = width - (padding * 2);
-    const chartHeight = height - (padding * 2);
-    
-    // Find scale
-    const minVal = Math.min(...priceData.filter(v => v !== null));
-    const maxVal = Math.max(...priceData.filter(v => v !== null));
-    const valRange = maxVal - minVal || 1;
-    
-    function getX(index) {
-      return padding + (index / (priceData.length - 1)) * chartWidth;
-    }
-    
-    function getY(val) {
-      if (val === null) return null;
-      // Invert Y axis for canvas coordinates
-      return padding + chartHeight - ((val - minVal) / valRange) * chartHeight;
+      pitch = W < 500 ? 14 : 17;
+      const rowH = pitch * Math.sqrt(3) / 2;
+      pillars = [];
+      for (let j = 0, y = pitch / 2; y < H; j++, y += rowH) {
+        for (let x = (j % 2 ? pitch : pitch / 2); x < W; x += pitch) pillars.push(x, y);
+      }
+      if (!pointerInside) { focus.x = target.x = W / 2; focus.y = target.y = H / 2; }
+      draw();
     }
 
-    // 1. Draw Grid Lines
-    ctx.strokeStyle = "#eef0eb";
-    ctx.lineWidth = 1;
-    for (let i = 1; i < 5; i++) {
-      const yVal = padding + (chartHeight * i / 5);
+    const umPerPx = () => (PITCH_NM / 1000) / pitch;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const s = umPerPx();
+      const lambda = WAVELENGTHS[wl] / 1000;
+      const k = 2 * Math.PI / lambda;
+      const rMin = pitch * 0.1, rMax = pitch * 0.4;
+      const TWO_PI = Math.PI * 2;
+
+      ctx.fillStyle = ink;
       ctx.beginPath();
-      ctx.moveTo(padding, yVal);
-      ctx.lineTo(width - padding, yVal);
+      for (let i = 0; i < pillars.length; i += 2) {
+        const dx = (pillars[i] - focus.x) * s, dy = (pillars[i + 1] - focus.y) * s;
+        let phi = k * (Math.sqrt(dx * dx + dy * dy + FOCAL_UM * FOCAL_UM) - FOCAL_UM);
+        phi = phi % TWO_PI;
+        const r = rMin + (rMax - rMin) * (1 - phi / TWO_PI);
+        ctx.moveTo(pillars[i] + r, pillars[i + 1]);
+        ctx.arc(pillars[i], pillars[i + 1], r, 0, TWO_PI);
+      }
+      ctx.globalAlpha = 0.72;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // focal marker
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 1.25;
+      ctx.beginPath();
+      ctx.arc(focus.x, focus.y, 7, 0, TWO_PI);
+      ctx.moveTo(focus.x - 13, focus.y); ctx.lineTo(focus.x - 9, focus.y);
+      ctx.moveTo(focus.x + 9, focus.y);  ctx.lineTo(focus.x + 13, focus.y);
+      ctx.moveTo(focus.x, focus.y - 13); ctx.lineTo(focus.x, focus.y - 9);
+      ctx.moveTo(focus.x, focus.y + 9);  ctx.lineTo(focus.x, focus.y + 13);
       ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      readout.textContent =
+        "λ = " + WAVELENGTHS[wl] + " nm · f = " + FOCAL_UM + " µm · pitch " + PITCH_NM +
+        " nm · focus (" + ((focus.x - W / 2) * s).toFixed(1) + ", " + ((H / 2 - focus.y) * s).toFixed(1) +
+        ") µm · " + (pillars.length / 2) + " pillars";
     }
 
-    // 2. Draw SMA Lines (if indicators computed)
-    // Long SMA
-    ctx.beginPath();
-    ctx.strokeStyle = "rgba(59, 130, 246, 0.4)"; // light blue
-    ctx.lineWidth = 1.5;
-    let firstLong = true;
-    for (let i = 0; i < longSMA.length; i++) {
-      const y = getY(longSMA[i]);
-      if (y !== null) {
-        if (firstLong) {
-          ctx.moveTo(getX(i), y);
-          firstLong = false;
-        } else {
-          ctx.lineTo(getX(i), y);
+    function frame(now) {
+      if (!visible) { running = false; return; }
+      if (!pointerInside) {
+        const t = (now - t0) / 1000;
+        target.x = W / 2 + Math.sin(t * 0.31) * W * 0.32;
+        target.y = H / 2 + Math.sin(t * 0.47 + 1) * H * 0.28;
+      }
+      focus.x += (target.x - focus.x) * 0.09;
+      focus.y += (target.y - focus.y) * 0.09;
+      draw();
+      requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (reduceMotion || running || !visible) return;
+      running = true;
+      requestAnimationFrame(frame);
+    }
+
+    function pointer(e) {
+      const rect = canvas.getBoundingClientRect();
+      target.x = e.clientX - rect.left;
+      target.y = e.clientY - rect.top;
+      if (reduceMotion) { focus.x = target.x; focus.y = target.y; draw(); }
+    }
+    canvas.addEventListener("pointerenter", e => { pointerInside = true; pointer(e); });
+    canvas.addEventListener("pointermove", pointer);
+    canvas.addEventListener("pointerleave", () => { pointerInside = false; t0 = performance.now() - 3000; });
+    canvas.addEventListener("click", () => { wl = (wl + 1) % WAVELENGTHS.length; if (!running) draw(); });
+
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }).observe(canvas);
+    new ResizeObserver(layout).observe(canvas);
+
+    refreshColors();
+    layout();
+    start();
+    return { refreshColors };
+  })();
+
+  /* ---------- background: graph paper that lenses around the cursor ----------
+     Each grid point is pushed radially away from the pointer with a
+     Gaussian falloff, like a magnifier sliding over the page. */
+  const background = (function () {
+    const canvas = document.querySelector(".bg");
+    const ctx = canvas.getContext("2d");
+    const finePointer = matchMedia("(pointer: fine)").matches;
+    const GAP = 34, STEP = 10, SIGMA = 150, PUSH = 0.42;
+    let W = 0, H = 0, dpr = 1, rule = "#ccc", accent = "#f00";
+    const m = { x: -1e4, y: -1e4 }, target = { x: -1e4, y: -1e4 };
+    let strength = 0, goal = 0, raf = 0;
+
+    function refreshColors() {
+      const cs = getComputedStyle(root);
+      rule = cs.getPropertyValue("--rule").trim();
+      accent = cs.getPropertyValue("--accent").trim();
+      draw();
+    }
+    function resize() {
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    }
+    function warp(x, y) {
+      const dx = x - m.x, dy = y - m.y;
+      const f = strength * PUSH * Math.exp(-(dx * dx + dy * dy) / (SIGMA * SIGMA));
+      return [x + dx * f, y + dy * f];
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = rule;
+      ctx.globalAlpha = root.dataset.theme === "dark" ? 0.5 : 0.7;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      const near = x => strength > 0.01 && Math.abs(x - m.x) < SIGMA * 2.5;
+      for (let x = (W % GAP) / 2; x <= W; x += GAP) {
+        if (!near(x)) { ctx.moveTo(x, 0); ctx.lineTo(x, H); continue; }
+        for (let y = 0; y <= H + STEP; y += STEP) {
+          const p = warp(x, y);
+          y ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]);
         }
       }
-    }
-    ctx.stroke();
-
-    // Short SMA
-    ctx.beginPath();
-    ctx.strokeStyle = "rgba(249, 115, 22, 0.4)"; // light orange
-    ctx.lineWidth = 1.5;
-    let firstShort = true;
-    for (let i = 0; i < shortSMA.length; i++) {
-      const y = getY(shortSMA[i]);
-      if (y !== null) {
-        if (firstShort) {
-          ctx.moveTo(getX(i), y);
-          firstShort = false;
-        } else {
-          ctx.lineTo(getX(i), y);
+      for (let y = (H % GAP) / 2; y <= H; y += GAP) {
+        if (!(strength > 0.01 && Math.abs(y - m.y) < SIGMA * 2.5)) { ctx.moveTo(0, y); ctx.lineTo(W, y); continue; }
+        for (let x = 0; x <= W + STEP; x += STEP) {
+          const p = warp(x, y);
+          x ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]);
         }
       }
-    }
-    ctx.stroke();
-
-    // 3. Draw Price Path
-    ctx.beginPath();
-    ctx.strokeStyle = "#1a1919"; // dark charcoal
-    ctx.lineWidth = 2.5;
-    ctx.moveTo(getX(0), getY(priceData[0]));
-    for (let i = 1; i < priceData.length; i++) {
-      ctx.lineTo(getX(i), getY(priceData[i]));
-    }
-    ctx.stroke();
-
-    // 4. Draw Trade Buy/Sell Indicators
-    trades.forEach(trade => {
-      const x = getX(trade.index);
-      const y = getY(trade.price);
-      
-      if (trade.type === "BUY") {
-        ctx.fillStyle = "#10b981"; // green arrow
-        ctx.beginPath();
-        ctx.moveTo(x, y + 12);
-        ctx.lineTo(x - 6, y + 20);
-        ctx.lineTo(x + 6, y + 20);
-        ctx.closePath();
-        ctx.fill();
-        
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-      } else {
-        ctx.fillStyle = "#ef4444"; // red arrow
-        ctx.beginPath();
-        ctx.moveTo(x, y - 12);
-        ctx.lineTo(x - 6, y - 20);
-        ctx.lineTo(x + 6, y - 20);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      if (strength > 0.01) {
+        const g = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, SIGMA);
+        g.addColorStop(0, accent + "14");
+        g.addColorStop(1, accent + "00");
+        ctx.fillStyle = g;
+        ctx.fillRect(m.x - SIGMA, m.y - SIGMA, SIGMA * 2, SIGMA * 2);
       }
-    });
-  }
-
-  // Strategy Toggle Handlers
-  btnMomentum.addEventListener("click", () => {
-    if (activeStrategy !== "momentum") {
-      btnReversion.classList.remove("active");
-      btnMomentum.classList.add("active");
-      resetSimulation("momentum");
     }
-  });
-
-  btnReversion.addEventListener("click", () => {
-    if (activeStrategy !== "reversion") {
-      btnMomentum.classList.remove("active");
-      btnReversion.classList.add("active");
-      resetSimulation("reversion");
+    function frame() {
+      m.x += (target.x - m.x) * 0.16;
+      m.y += (target.y - m.y) * 0.16;
+      strength += (goal - strength) * 0.08;
+      draw();
+      const settled = Math.abs(target.x - m.x) < 0.3 && Math.abs(target.y - m.y) < 0.3 && Math.abs(goal - strength) < 0.005;
+      raf = settled ? 0 : requestAnimationFrame(frame);
     }
-  });
+    const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
 
-  // Start initial simulator run
-  resetSimulation("momentum");
-});
+    if (finePointer && !reduceMotion) {
+      addEventListener("pointermove", e => {
+        if (e.pointerType !== "mouse") return;
+        if (goal === 0) { m.x = e.clientX; m.y = e.clientY; }
+        target.x = e.clientX; target.y = e.clientY; goal = 1; kick();
+      }, { passive: true });
+      document.addEventListener("pointerleave", () => { goal = 0; kick(); });
+      addEventListener("blur", () => { goal = 0; kick(); });
+    }
+    addEventListener("resize", resize);
+    refreshColors();
+    resize();
+    return { refreshColors };
+  })();
+})();

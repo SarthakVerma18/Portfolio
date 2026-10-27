@@ -3,527 +3,335 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sarthak Verma — Portfolio</title>
-  
-  <!-- Custom Fonts (Serif for headings, Sans-serif for body, Monospace/Pixel for stats & technical labels) -->
+  <title>Sarthak Verma</title>
+  <meta name="description" content="Sarthak Verma — Electrical Engineering, IIT Madras. Quant research, scientific software, systems." />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css" />
+  <script>
+    (function () {
+      var d = document.documentElement, t = null;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      d.dataset.theme = t;
+      d.classList.add("js");
+    })();
+  </script>
 </head>
 <body>
-  <!-- Navigation Header -->
-  <header class="header">
-    <nav class="nav-container">
-      <a href="#" class="nav-logo">
-        <span class="logo-mono">SV</span> Sarthak Verma
-      </a>
-      <div class="nav-links">
-        <a href="#about" class="nav-link">About</a>
-        <a href="#achievements" class="nav-link">Achievements</a>
-        <a href="#experience" class="nav-link">Experience</a>
-        <a href="#projects" class="nav-link">Projects</a>
-        <a href="#skills" class="nav-link">Skills</a>
-        <a href="#contact" class="nav-link contact-btn">Contact</a>
-      </div>
-    </nav>
+  <canvas class="bg" aria-hidden="true"></canvas>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="top">
+    <div class="top-inner">
+      <a href="#" class="home"><span class="mark">sv</span>Sarthak Verma</a>
+      <nav>
+        <a href="#work">Work</a>
+        <a href="#research">Research</a>
+        <a href="#projects">Projects</a>
+        <a href="#awards">Awards</a>
+        <a href="#contact">Contact</a>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>
+        </button>
+      </nav>
+    </div>
   </header>
 
-  <main class="main-content">
-    
-    <!-- Hero / Profile Section -->
-    <section class="section hero-section">
-      <div class="grid-2col">
-        <div class="hero-intro">
-          <span class="section-label">[01 / INTRODUCTION]</span>
-          <h1 class="hero-title">Engineering at the intersection of mathematics, hardware, & finance.</h1>
-          <p class="hero-subtitle">
-            I am an Electrical Engineering undergraduate student at the <strong>Indian Institute of Technology, Madras</strong>. 
-            My work spans developing metaoptics design software, building simulated exchange environments, and researching 
-            quantitative interest rate models.
-          </p>
-          <div class="hero-actions">
-            <a href="resume.pdf" target="_blank" class="btn-primary">
-              View Resume <span class="btn-arrow">→</span>
-            </a>
-            <a href="https://www.linkedin.com/in/sarthak-verma-781a6627b" target="_blank" class="btn-secondary">
-              LinkedIn
-            </a>
-          </div>
-        </div>
-        
-        <div class="hero-card">
-          <div class="card-header">
-            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-            <span class="card-title-mono">system_status.sh</span>
-          </div>
-          <div class="card-body-mono">
-            <div class="mono-line"><span class="lbl">INSTITUTION</span> <span class="val">IIT Madras</span></div>
-            <div class="mono-line"><span class="lbl">DEPARTMENT</span> <span class="val">Electrical Engineering</span></div>
-            <div class="mono-line"><span class="lbl">YEAR</span> <span class="val">B.Tech Class of 2027</span></div>
-            <div class="mono-line"><span class="lbl">CGPA</span> <span class="val">8.67 / 10.00</span></div>
-            <div class="mono-line"><span class="lbl">LOCATION</span> <span class="val">Chennai, India</span></div>
-            <div class="mono-line"><span class="lbl">STATUS</span> <span class="val pulse">● ACTIVE_RESEARCH</span></div>
-          </div>
-        </div>
-      </div>
+  <div class="page">
+
+    <section class="intro">
+      <h1>Sarthak Verma</h1>
+      <p class="lede">
+        I study Electrical Engineering at <strong>IIT Madras</strong> (B.Tech, class of 2027).
+        This summer I was a quantitative research intern at <strong>Goldman Sachs</strong>, working on
+        exotic interest-rate models. Outside of that I write scientific software for metasurface design,
+        build trading simulators, and run <a href="https://leetcore.co.in" target="_blank" rel="noopener">LeetCore</a>,
+        an online assessment platform.
+      </p>
+      <p class="lede muted">
+        I like problems where the maths has to survive contact with a real system — a pricing desk,
+        a fabrication run, or a prosthetic knee.
+      </p>
+      <p class="links">
+        <a href="Sarthak_Verma_Resume.pdf" target="_blank">Résumé (PDF)</a>
+        <a href="mailto:sarthak1807verma@gmail.com">Email</a>
+        <a href="https://github.com/SarthakVerma18" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/sarthak-verma-781a6627b" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+
+      <figure class="lattice">
+        <canvas id="lattice" aria-label="Animated hexagonal nanopillar lattice"></canvas>
+        <figcaption>
+          <span class="fig-no">Fig. 1</span>
+          A hexagonal metasurface. Each pillar's radius encodes the local phase of a
+          lens focused wherever your cursor is — the same idea the
+          <a href="#research">design tool</a> turns into GDS files. Click to switch
+          design wavelength.
+          <span class="fig-readout" id="lattice-readout"></span>
+        </figcaption>
+      </figure>
+
+      <aside class="now">
+        <span class="now-label">Now</span>
+        Heading the EE UG Placement &amp; Internship Cell for the 2026–27 season, and growing LeetCore.
+      </aside>
     </section>
 
-    <!-- About Me Section -->
-    <section id="about" class="section section-bordered">
-      <div class="section-grid">
-        <div class="section-meta">
-          <span class="section-label">[02 / BIOGRAPHY]</span>
-          <h2 class="section-title">About Me</h2>
+    <section id="work">
+      <h2>Experience</h2>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>Goldman Sachs <span class="role">Quantitative Research Intern</span></h3>
+          <span class="date">May – Jul 2026</span>
         </div>
-        <div class="section-body">
-          <p class="bio-paragraph">
-            I’m a passionate engineering student who enjoys applying rigorous mathematical and analytical thinking to complex, multi-disciplinary fields. 
-            From implementing local volatility pricing models during my quant internship to coding low-level compilers and building real-time controller firmware, I love bridging the gap between math, software, and physical systems.
-          </p>
-          
-          <div class="education-table-wrapper">
-            <h3 class="subsection-title">Education</h3>
-            <table class="academic-table">
-              <thead>
-                <tr>
-                  <th>Degree / Certificate</th>
-                  <th>Institution</th>
-                  <th class="text-right">CGPA / %</th>
-                  <th class="text-right">Year</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="semi-bold">B.Tech in Electrical Engineering</td>
-                  <td>Indian Institute of Technology, Madras</td>
-                  <td class="text-right font-mono">8.67 / 10</td>
-                  <td class="text-right font-mono">2027</td>
-                </tr>
-                <tr>
-                  <td class="semi-bold">Std. XII (CBSE)</td>
-                  <td>Holy Mission Secondary School, Patna</td>
-                  <td class="text-right font-mono">96.8%</td>
-                  <td class="text-right font-mono">2023</td>
-                </tr>
-                <tr>
-                  <td class="semi-bold">Std. X (CBSE)</td>
-                  <td>Loyola High School, Patna</td>
-                  <td class="text-right font-mono">98.2%</td>
-                  <td class="text-right font-mono">2021</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <ul>
+          <li>Built calibration pipelines using Stochastic Volatility Local Volatility (SVLV) models for KRW CMS–CMT exotics, improving volatility-surface fitting and front-office pricing accuracy.</li>
+          <li>Designed a market-benchmarking engine that validates exotic rate pricing against Totem consensus data, tightening desk quotes and mark-to-market accuracy.</li>
+          <li>Developed a real-time risk and diagnostics engine automating PnL explain, Greeks / risk attribution and scenario decomposition for exotic rates traders.</li>
+        </ul>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>CYBATHLON <span class="role">Zurich, Switzerland</span></h3>
+          <span class="date">Oct 2024</span>
         </div>
-      </div>
+        <ul>
+          <li>Represented IIT Madras and the R2D2 Lab (Rehabilitation Research and Device Development) at an international competition for assistive technologies.</li>
+          <li>Finished <strong>8th globally</strong> — the first Indian student-led team to compete in this category.</li>
+          <li>Worked on real-time control and embedded systems for an above-knee prosthesis.</li>
+        </ul>
+      </article>
+
+      <h2 class="h2-sub">Leadership</h2>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>LeetCore <span class="role">Founder</span></h3>
+          <span class="date">May 2026 – now</span>
+        </div>
+        <ul>
+          <li>Built and scaled an online assessment platform with proctored contests to <strong>2,500+ active users</strong>; live at <a href="https://leetcore.co.in" target="_blank" rel="noopener">leetcore.co.in</a>.</li>
+          <li>Partnered with GlobalFoundries to bring industry-aligned technical evaluation modules onto the platform.</li>
+          <li>Full-stack deployment with real-time analytics and mock exam suites.</li>
+        </ul>
+        <figure class="shot">
+          <a href="https://leetcore.co.in" target="_blank" rel="noopener"><img src="img/leetcore.png" alt="LeetCore landing page" loading="lazy" width="1280" height="800"></a>
+          <figcaption>leetcore.co.in</figcaption>
+        </figure>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>EE UG Placement &amp; Internship Cell, IIT Madras <span class="role">Head</span></h3>
+          <span class="date">May 2026 – now</span>
+        </div>
+        <ul>
+          <li>Leading a team of 14 for the EE department's upcoming placement and internship season.</li>
+          <li>Previous season: primary / secondary point of contact for 20+ companies and 40+ profiles.</li>
+          <li>Drafted and implemented placement policies and guidelines for students and recruiters.</li>
+        </ul>
+      </article>
     </section>
 
-    <!-- Scholastic Achievements Section (Moved Above Experience) -->
-    <section id="achievements" class="section section-bordered">
-      <div class="section-grid">
-        <div class="section-meta">
-          <span class="section-label">[03 / ACADEMIC LAURELS]</span>
-          <h2 class="section-title">Scholastic Achievements</h2>
+    <section id="research">
+      <h2>Research</h2>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>GUI-driven metaoptical design tool</h3>
+          <span class="date">Jan 2025 – now</span>
         </div>
-        <div class="section-body">
-          <div class="achievements-grid">
-            
-            <div class="achievement-card">
-              <div class="achievement-rank">AIR 714</div>
-              <div class="achievement-title">JEE Advanced 2023</div>
-              <div class="achievement-details">Ranked in top 0.4% among 200,000+ selected candidates nationwide.</div>
-            </div>
-
-            <div class="achievement-card">
-              <div class="achievement-rank">AIR 678</div>
-              <div class="achievement-title">JEE Mains 2023</div>
-              <div class="achievement-details">Achieved a 99.94 percentile among 1.2+ million participants.</div>
-            </div>
-
-            <div class="achievement-card">
-              <div class="achievement-rank">AIR 163</div>
-              <div class="achievement-title">KVPY Scholar 2022</div>
-              <div class="achievement-details">Prestigious science fellowship awarded by IISc Bangalore.</div>
-            </div>
-
-            <div class="achievement-card">
-              <div class="achievement-rank">RANK 1</div>
-              <div class="achievement-title">Pythagoras Star</div>
-              <div class="achievement-details">State Rank 1 in Mathematics Competition by Connectech & UEM.</div>
-            </div>
-
-            <div class="achievement-card">
-              <div class="achievement-rank">TOP 5</div>
-              <div class="achievement-title">IMC Trading Simulation</div>
-              <div class="achievement-details">Placed in top 5 out of 150+ teams at IIT Madras trading challenge.</div>
-            </div>
-
-            <div class="achievement-card">
-              <div class="achievement-rank">TOP 30</div>
-              <div class="achievement-title">Optiver Tradeathon</div>
-              <div class="achievement-details">Selected in top 30 out of 300+ advanced mathematical participants.</div>
-            </div>
-
-          </div>
-          
-          <ul class="achievements-list-inline">
-            <li><strong>NTSE Scholar</strong> — Recipient of the National Talent Search Examination Fellowship (Govt. of India, 2021).</li>
-            <li><strong>National Top 1%</strong> in NSEC (National Standard Examination in Chemistry) 2022.</li>
-            <li><strong>State Top 1%</strong> in NSEJS 2019, NSEP 2022, and NSEC 2022.</li>
-            <li><strong>National Rank 3</strong> in Montfort International Mathematics Olympiad, 2019.</li>
-            <li><strong>International Rank 28 & Zonal Rank 3</strong> in SOF International Mathematics Olympiad, 2020.</li>
-            <li><strong>Zonal Rank 1 & International Rank 71</strong> in Silverzone International Informatics Olympiad, 2019.</li>
-          </ul>
-        </div>
-      </div>
+        <p class="entry-note">With Prof. Shanti Bhattacharya, IIT Madras</p>
+        <ul>
+          <li>Co-authored a paper submitted to the <em>Journal of Optics</em> (Springer Nature; official journal of the Optical Society of India).</li>
+          <li>Wrote Python software for fast generation of GDS layout files for metamaterial fabrication.</li>
+          <li>Added support for hexagonal lattices and dual-wavelength phase profiles using variable-radius nanopillars.</li>
+        </ul>
+      </article>
     </section>
 
-    <!-- Experience & Leadership Section -->
-    <section id="experience" class="section section-bordered">
-      <div class="section-grid">
-        <div class="section-meta">
-          <span class="section-label">[04 / EXPERIENCE]</span>
-          <h2 class="section-title">Professional & Leadership</h2>
+    <section id="projects">
+      <h2>Projects</h2>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>Mini operating system</h3>
+          <span class="date">Jan – Mar 2026</span>
         </div>
-        <div class="section-body">
-          <div class="timeline">
-            
-            <!-- Goldman Sachs -->
-            <div class="timeline-item">
-              <div class="timeline-header">
-                <div>
-                  <h3 class="timeline-role role-large">Quantitative Research Intern</h3>
-                  <span class="timeline-org org-large">Goldman Sachs</span>
-                </div>
-                <span class="timeline-date font-mono">May 2026 — Jul 2026</span>
-              </div>
-              <ul class="timeline-details">
-                <li>Engineered calibration pipelines using <strong>Stochastic Volatility Local Volatility (SVLV)</strong> models for KRW Constant Maturity Swap (CMS) and Constant Maturity Treasury (CMT) submissions, improving pricing accuracy for exotic interest rate derivatives.</li>
-                <li>Architected an end-to-end automated quality assessment tool to validate mark-to-market submissions against Totem consensus pricing benchmarks, mitigating valuation risk for the Independent Price Verification (IPV) desk.</li>
-                <li>Integrated an intelligent reasoning and query engine using custom analytical logic to automatically resolve trader/controller edge cases and audit inquiries.</li>
-                <li>Designed and deployed a full-stack interactive UI for seamless workflow integration, streamlining the submission lifecycle and reducing manual valuation review times.</li>
-              </ul>
-            </div>
-
-            <!-- Cybathlon -->
-            <div class="timeline-item">
-              <div class="timeline-header">
-                <div>
-                  <h3 class="timeline-role">Control Systems Developer</h3>
-                  <span class="timeline-org">CYBATHLON Competition | Zurich, Switzerland</span>
-                </div>
-                <span class="timeline-date font-mono">Oct 2024</span>
-              </div>
-              <ul class="timeline-details">
-                <li>Represented IIT Madras and the <strong>R2D2 Lab</strong> (Rehabilitation Research and Device Development) at an international competition focused on assistive technology.</li>
-                <li>Achieved a <strong>global rank of 8</strong>, marking the first time an Indian student-led team competed in this domain.</li>
-                <li>Contributed to the design of real-time control systems and embedded solutions for assistive devices, specifically focusing on above-knee amputees.</li>
-              </ul>
-            </div>
-
-            <!-- Clubs Coordination -->
-            <div class="timeline-item">
-              <div class="timeline-header">
-                <div>
-                  <h3 class="timeline-role">Coordinator</h3>
-                  <span class="timeline-org">IITM Placement Cell & Electronics Club</span>
-                </div>
-                <span class="timeline-date font-mono">2024 — Present</span>
-              </div>
-              <ul class="timeline-details">
-                <li>Organize workshops, manage corporate outreach, and coordinate technical events for the campus community.</li>
-                <li>Mentor students in project design, microcontrollers, and circuit simulation concepts.</li>
-              </ul>
-            </div>
+        <p>A small x86 kernel in C++ and assembly: boot and hardware I/O, physical / virtual memory with paging, user/kernel isolation, a preemptive round-robin scheduler with context switching, and a system-call interface with interrupt handlers.</p>
+        <p class="stack">C++ · x86 assembly</p>
+        <figure class="pfig" data-fig="scheduler">
+          <canvas></canvas>
+          <div class="fig-controls">
+            <label>time quantum <input type="range" min="1" max="6" step="1" value="2"> <output>2</output></label>
           </div>
+          <figcaption><span class="fig-no">Fig. 2</span> Round-robin scheduling of four processes, as the kernel's scheduler does it. Small quanta mean fairer sharing but more context switches. <span class="fig-readout"></span></figcaption>
+        </figure>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>Transformer-based stock return forecasting</h3>
+          <span class="date">Jan – Mar 2026</span>
         </div>
-      </div>
+        <p>A PyTorch Transformer for multi-horizon return forecasting. Price, volume, momentum and volatility features with sliding-window sampling and positional encoding, evaluated with walk-forward validation.</p>
+        <p class="stack">PyTorch · time series</p>
+        <figure class="pfig" data-fig="walkforward">
+          <canvas></canvas>
+          <div class="fig-controls">
+            <label>fold <input type="range" min="1" max="7" step="1" value="1"></label>
+          </div>
+          <figcaption><span class="fig-no">Fig. 3</span> Walk-forward validation on a synthetic series: train on a rolling window, test on the next block, then slide forward. <span class="fig-readout"></span></figcaption>
+        </figure>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3><a href="https://synapse-arena.vercel.app/" target="_blank" rel="noopener">Synapse</a></h3>
+          <span class="date">2026</span>
+        </div>
+        <p>A real-time multiplayer biology quiz game: live matchmaking, heuristic bot opponents, leagues, spaced-repetition review, tournaments and a co-op raid mode.</p>
+        <p class="stack">Next.js · Supabase Realtime · Postgres · Capacitor</p>
+        <figure class="shot">
+          <a href="https://synapse-arena.vercel.app/" target="_blank" rel="noopener"><img src="img/synapse.png" alt="Synapse landing page" loading="lazy" width="1280" height="800"></a>
+          <figcaption>synapse-arena.vercel.app</figcaption>
+        </figure>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3><a href="https://github.com/SarthakVerma18/Trading-Strategy-Arena" target="_blank" rel="noopener">Trading Strategy Arena</a></h3>
+          <span class="date">May – Jul 2025</span>
+        </div>
+        <p>An event-driven backtesting engine for pitting strategies against each other. Models slippage, transaction costs and execution latency to avoid lookahead bias; evaluates StatArb and multi-factor ML signals on Sharpe, alpha/beta and rolling VaR.</p>
+        <p class="stack">Python · Tkinter</p>
+        <figure class="pfig" data-fig="frictions">
+          <canvas></canvas>
+          <div class="fig-controls">
+            <label>cost <input type="range" min="0" max="30" step="1" value="8"> <output>8</output> bps</label>
+            <label><input type="checkbox"> 1-bar latency</label>
+            <button type="button">new market</button>
+          </div>
+          <figcaption><span class="fig-no">Fig. 4</span> Why the arena models frictions: the same momentum signal on synthetic returns, with and without trading costs and latency. Illustrative only, not a backtest result. <span class="fig-readout"></span></figcaption>
+        </figure>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>SPICE simulator &amp; optimiser</h3>
+          <span class="date">Jul – Nov 2024</span>
+        </div>
+        <p>A circuit simulator written in Python, with topology optimisation by simulated annealing. Profiled the hot paths and moved them into Cython extensions.</p>
+        <p class="stack">Python · Cython</p>
+        <figure class="pfig" data-fig="annealing">
+          <canvas></canvas>
+          <div class="fig-controls">
+            <label>cooling α <input type="range" min="0.95" max="0.995" step="0.005" value="0.98"> <output>0.980</output></label>
+            <button type="button">restart</button>
+          </div>
+          <figcaption><span class="fig-no">Fig. 5</span> Simulated annealing on a bumpy cost landscape. Early on, when it's hot, it accepts uphill moves to escape local minima. Cool it too fast and it freezes in the wrong valley. <span class="fig-readout"></span></figcaption>
+        </figure>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3><a href="https://github.com/SarthakVerma18/Nand2Tetris" target="_blank" rel="noopener">Nand2Tetris</a></h3>
+          <span class="date">2025</span>
+        </div>
+        <p>A 16-bit computer built up from NAND gates, with its assembler, VM translator and compiler.</p>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>Numerical methods in C</h3>
+          <span class="date">Jul – Nov 2023</span>
+        </div>
+        <p>Root-finding, Lagrange / spline interpolation, Gaussian elimination and LU solvers. Solved the Landau–Lifshitz–Gilbert equations (RK, Heun, Euler–Cauchy) for magnetic switching, and tested a PRNG against the NIST suite.</p>
+        <p class="stack">C</p>
+        <figure class="pfig" data-fig="integrators">
+          <canvas></canvas>
+          <div class="fig-controls">
+            <label>step h <input type="range" min="0.05" max="0.6" step="0.01" value="0.25"> <output>0.25</output></label>
+          </div>
+          <figcaption><span class="fig-no">Fig. 6</span> The same three integrators used for the LLG equations, run on a harmonic oscillator in phase space. Euler spirals outward and gains energy; RK4 stays on the orbit. <span class="fig-readout"></span></figcaption>
+        </figure>
+      </article>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="section section-bordered">
-      <div class="section-grid">
-        <div class="section-meta">
-          <span class="section-label">[05 / ENGINEERING & DEV]</span>
-          <h2 class="section-title">Selected Projects</h2>
-          <p class="section-meta-text">Click the strategies in the interactive simulator below to evaluate agent performance live.</p>
-        </div>
-        
-        <div class="section-body">
-          <div class="projects-list">
-            
-            <!-- Trading Strategy Arena (With Live Simulator) -->
-            <div class="project-card featured-project">
-              <div class="project-info">
-                <div class="project-header">
-                  <span class="project-tag-mono">[SYSTEM SIMULATOR]</span>
-                  <h3 class="project-card-title">Trading Strategy Arena</h3>
-                  <span class="project-date font-mono">May 2025 — Jul 2025</span>
-                </div>
-                <p class="project-desc">
-                  A high-fidelity simulated exchange environment built to backtest and evaluate agent-based trading strategies under realistic market constraints. Supports slippage modeling, order matching, and computes live performance diagnostics.
-                </p>
-                <div class="project-tech-badges">
-                  <span>Python</span>
-                  <span>Tkinter</span>
-                  <span>Backtesting</span>
-                  <span>Quantitative Finance</span>
-                </div>
-              </div>
-              
-              <!-- Interactive Canvas Simulator Block -->
-              <div class="interactive-simulator">
-                <div class="sim-header">
-                  <div class="sim-title">Live Strategy Simulation Console</div>
-                  <div class="sim-controls">
-                    <button id="btn-strategy-momentum" class="sim-btn active">Momentum</button>
-                    <button id="btn-strategy-reversion" class="sim-btn">Mean Reversion</button>
-                  </div>
-                </div>
-                <div class="sim-workspace">
-                  <div class="canvas-container">
-                    <canvas id="sim-canvas"></canvas>
-                  </div>
-                  <div class="sim-sidebar">
-                    <div class="sim-metric-card">
-                      <div class="metric-lbl">TOTAL RETURN</div>
-                      <div id="sim-metric-return" class="metric-val return-positive">+0.00%</div>
-                    </div>
-                    <div class="sim-metric-card">
-                      <div class="metric-lbl">SHARPE RATIO</div>
-                      <div id="sim-metric-sharpe" class="metric-val font-mono">1.82</div>
-                    </div>
-                    <div class="sim-metric-card">
-                      <div class="metric-lbl">TRADES EXECUTED</div>
-                      <div id="sim-metric-trades" class="metric-val font-mono">0</div>
-                    </div>
-                    <div class="sim-status-indicator">
-                      <span class="status-pulse-green"></span> Running Live Agent
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Synapse (New Project Added) -->
-            <div class="project-card">
-              <div class="project-header">
-                <span class="project-tag-mono">[WEB APP & REALTIME PLATFORM]</span>
-                <h3 class="project-card-title">Synapse — Competitive Biology Quiz E-Sport</h3>
-                <span class="project-date font-mono">Jan 2026 — Present</span>
-              </div>
-              <p class="project-desc">
-                A real-time competitive multiplayer e-sport platform for biology quizzes. Engineered an autonomous gaming engine with live matchmaking, bot opponents (using custom heuristics), in-game emotes, and league progression. Implemented retention loops including SRS-based review sessions, a virtual coin economy, store, scholarship tournament brackets, and a co-op boss raid mode.
-              </p>
-              <div class="project-tech-badges">
-                <span>Next.js</span>
-                <span>React</span>
-                <span>Supabase (Realtime)</span>
-                <span>Docker-Compose</span>
-                <span>Capacitor (Haptics & Notifications)</span>
-                <span>Postgres RLS</span>
-              </div>
-            </div>
-
-            <!-- Metaoptics -->
-            <div class="project-card">
-              <div class="project-header">
-                <span class="project-tag-mono">[SCIENTIFIC SOFTWARE]</span>
-                <h3 class="project-card-title">GUI-Driven Metaoptical Design Tool</h3>
-                <span class="project-date font-mono">Jan 2025 — Present</span>
-              </div>
-              <p class="project-desc">
-                Research project conducted under the guidance of Prof. Shanti Bhattacharya. Built a GUI-based Python application that automates the generation of highly optimized GDS layout files for metamaterial fabrication. Added support for hexagonal lattices and dual-wavelength designs utilizing variable-radius nanopillars.
-              </p>
-              <div class="project-tech-badges">
-                <span>Python</span>
-                <span>GDSII Generation</span>
-                <span>Deep Learning</span>
-                <span>Electromagnetics</span>
-              </div>
-            </div>
-
-            <!-- Nand2Tetris -->
-            <div class="project-card">
-              <div class="project-header">
-                <span class="project-tag-mono">[COMPUTER ARCHITECTURE]</span>
-                <h3 class="project-card-title">Nand2Tetris System</h3>
-                <span class="project-date font-mono">2025</span>
-              </div>
-              <p class="project-desc">
-                Constructed a complete, modern 16-bit computer from fundamental NAND gates. Wrote the assembler, virtual machine emulator, compiler for a high-level object-oriented language, and built a basic operating system to run interactive applications.
-              </p>
-              <div class="project-tech-badges">
-                <span>HDL</span>
-                <span>Compiler Design</span>
-                <span>Operating Systems</span>
-                <span>Java / Python</span>
-              </div>
-            </div>
-
-            <!-- Simulation & Optimization -->
-            <div class="project-card">
-              <div class="project-header">
-                <span class="project-tag-mono">[SCIENTIFIC RUNTIME]</span>
-                <h3 class="project-card-title">SPICE Circuit Simulator & Optimizer</h3>
-                <span class="project-date font-mono">Jul 2024 — Nov 2024</span>
-              </div>
-              <p class="project-desc">
-                Developed a custom SPICE circuit simulator and an intelligent keyboard layout optimizer utilizing simulated annealing. Used Cython compilation to optimize matrix and vector operations for high-speed scientific execution.
-              </p>
-              <div class="project-tech-badges">
-                <span>Python</span>
-                <span>Cython</span>
-                <span>Optimization</span>
-                <span>Linear Solvers</span>
-              </div>
-            </div>
-
-            <!-- Numerical Methods in C -->
-            <div class="project-card">
-              <div class="project-header">
-                <span class="project-tag-mono">[MATHEMATICAL COMPUTING]</span>
-                <h3 class="project-card-title">Numerical Methods in C Engine</h3>
-                <span class="project-date font-mono">Jul 2023 — Nov 2023</span>
-              </div>
-              <p class="project-desc">
-                Implemented foundational solvers: Gaussian elimination, LU decomposition, spline interpolation, and RK/Euler ODE methods to model Landau-Lifshitz-Gilbert equation for magnetic switching. Built a pseudo-random sequence generator validated using the NIST test suite.
-              </p>
-              <div class="project-tech-badges">
-                <span>C</span>
-                <span>ODE Solvers</span>
-                <span>NIST Randomness</span>
-                <span>Linear Algebra</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
+    <section id="awards">
+      <h2>Awards &amp; ranks</h2>
+      <table class="ranks">
+        <tbody>
+          <tr><td class="r">AIR 714</td><td>JEE Advanced 2023 — top 0.4%</td></tr>
+          <tr><td class="r">AIR 678</td><td>JEE Main 2023 — 99.94 percentile, 1.2M+ candidates</td></tr>
+          <tr><td class="r">AIR 163</td><td>KVPY 2022 (IISc Bangalore), 50k+ aspirants</td></tr>
+          <tr><td class="r">Top 5</td><td>IMC Trading simulation — algorithmic trading, 150+ teams</td></tr>
+          <tr><td class="r">Top 30</td><td>Optiver Tradeathon, IIT Madras — 300+ participants</td></tr>
+          <tr><td class="r">Fellow</td><td>NTSE, Government of India, 2021</td></tr>
+          <tr><td class="r">Top 1%</td><td>National: NSEC 2022 · State: NSEJS 2019, NSEP 2022, NSEC 2022</td></tr>
+          <tr><td class="r">Rank 1</td><td>Pythagoras Star (state-level maths contest, Connectech–UEM)</td></tr>
+          <tr><td class="r">Rank 3</td><td>Montfort International Mathematics Olympiad 2019 (national)</td></tr>
+          <tr><td class="r">Rank 28</td><td>SOF International Mathematics Olympiad 2020 (international; zonal rank 3)</td></tr>
+          <tr><td class="r">Rank 71</td><td>Silverzone International Informatics Olympiad 2019 (international; zonal rank 1)</td></tr>
+        </tbody>
+      </table>
     </section>
 
-    <!-- Skills Section -->
-    <section id="skills" class="section section-bordered">
-      <div class="section-grid">
-        <div class="section-meta">
-          <span class="section-label">[06 / SKILLS & COURSES]</span>
-          <h2 class="section-title">Technical Skillset</h2>
-          <p class="section-meta-text">Filter skills by department using the navigation below.</p>
-        </div>
-        <div class="section-body">
-          <div class="skills-filter-nav">
-            <button class="filter-btn active" data-filter="all">All Skills</button>
-            <button class="filter-btn" data-filter="languages">Languages</button>
-            <button class="filter-btn" data-filter="hardware">Hardware & EE</button>
-            <button class="filter-btn" data-filter="libraries">Libraries & Math</button>
-          </div>
+    <section id="education">
+      <h2>Education</h2>
+      <table class="edu">
+        <tbody>
+          <tr>
+            <td><strong>B.Tech, Electrical Engineering</strong><br><span class="muted">IIT Madras</span></td>
+            <td class="num">8.57 / 10</td>
+            <td class="num">2027</td>
+          </tr>
+          <tr>
+            <td>Class XII (CBSE)<br><span class="muted">Holy Mission Secondary School, Patna</span></td>
+            <td class="num">96.8%</td>
+            <td class="num">2023</td>
+          </tr>
+          <tr>
+            <td>Class X (CBSE)<br><span class="muted">Loyola High School, Patna</span></td>
+            <td class="num">98.2%</td>
+            <td class="num">2021</td>
+          </tr>
+        </tbody>
+      </table>
 
-          <div class="skills-wrapper">
-            <!-- Languages -->
-            <span class="skill-tag" data-category="languages">C/C++</span>
-            <span class="skill-tag" data-category="languages">Python</span>
-            <span class="skill-tag" data-category="languages">System Verilog</span>
-            <span class="skill-tag" data-category="languages">LaTeX</span>
-            
-            <!-- Hardware -->
-            <span class="skill-tag" data-category="hardware">ARM / AVR</span>
-            <span class="skill-tag" data-category="hardware">Microcontrollers</span>
-            <span class="skill-tag" data-category="hardware">LTSpice</span>
-            <span class="skill-tag" data-category="hardware">Altium Designer</span>
-            <span class="skill-tag" data-category="hardware">ROS / Gazebo</span>
+      <h3 class="h3-plain">Coursework</h3>
+      <p>Stochastic Modelling &amp; Queueing Theory, Probability Foundations for EE, Statistics for EE,
+        Machine Learning Foundations, Deep Learning, Advanced Game Theory, Linear Algebra,
+        Multivariable Calculus, Numerical Methods with C.</p>
 
-            <!-- Libraries & math -->
-            <span class="skill-tag" data-category="libraries">NumPy</span>
-            <span class="skill-tag" data-category="libraries">SciPy</span>
-            <span class="skill-tag" data-category="libraries">Pandas</span>
-            <span class="skill-tag" data-category="libraries">Scikit-Learn</span>
-            <span class="skill-tag" data-category="libraries">Matplotlib</span>
-            <span class="skill-tag" data-category="libraries">Cython</span>
-            <span class="skill-tag" data-category="libraries">OOP</span>
-            <span class="skill-tag" data-category="libraries">Git</span>
-          </div>
-
-          <div class="coursework-wrapper">
-            <h3 class="subsection-title">Academic Coursework</h3>
-            <div class="course-grid">
-              <div class="course-item">
-                <span class="course-code font-mono">[EE4112]</span>
-                <span class="course-name">Stochastic Modelling & Queues</span>
-              </div>
-              <div class="course-item">
-                <span class="course-code font-mono">[EE3110]</span>
-                <span class="course-name">Probability Foundations for EE</span>
-              </div>
-              <div class="course-item">
-                <span class="course-code font-mono">[CS4011]</span>
-                <span class="course-name">Machine Learning Foundations</span>
-              </div>
-              <div class="course-item">
-                <span class="course-code font-mono">[MA2040]</span>
-                <span class="course-name">Linear Algebra</span>
-              </div>
-              <div class="course-item">
-                <span class="course-code font-mono">[EE2001]</span>
-                <span class="course-name">Numerical Methods with C</span>
-              </div>
-              <div class="course-item">
-                <span class="course-code font-mono">[MA1010]</span>
-                <span class="course-name">Multivariable Calculus</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <h3 class="h3-plain">Tools</h3>
+      <p>C/C++, Python, SystemVerilog, x86 assembly · NumPy, SciPy, pandas, scikit-learn, PyTorch,
+        Matplotlib, Cython · Git, LaTeX</p>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="section section-bordered section-contact">
-      <div class="section-grid">
-        <div class="section-meta">
-          <span class="section-label">[07 / CONNECT]</span>
-          <h2 class="section-title">Get In Touch</h2>
-        </div>
-        <div class="section-body">
-          <p class="contact-lead">
-            Feel free to reach out for collaborations, research opportunities, or quantitative finance discussions.
-          </p>
-          <div class="contact-details">
-            <div class="contact-item">
-              <span class="contact-lbl font-mono">EMAILS:</span>
-              <div class="contact-emails">
-                <a href="mailto:ee23b104@smail.iitm.ac.in" class="contact-val text-underline">ee23b104@smail.iitm.ac.in</a>
-                <span class="email-separator">/</span>
-                <a href="mailto:sarthak1807verma@gmail.com" class="contact-val text-underline">sarthak1807verma@gmail.com</a>
-              </div>
-            </div>
-            <div class="contact-item">
-              <span class="contact-lbl font-mono">PHONE:</span>
-              <span class="contact-val font-mono">+91-9113798592</span>
-            </div>
-            <div class="contact-item">
-              <span class="contact-lbl font-mono">LINKEDIN:</span>
-              <a href="https://www.linkedin.com/in/sarthak-verma-781a6627b" target="_blank" class="contact-val text-underline">linkedin.com/in/sarthak-verma-781a6627b</a>
-            </div>
-            <div class="contact-item">
-              <span class="contact-lbl font-mono">GITHUB:</span>
-              <a href="https://github.com/SarthakVerma18" target="_blank" class="contact-val text-underline">github.com/SarthakVerma18</a>
-            </div>
-          </div>
-        </div>
-      </div>
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>The quickest way to reach me is email —
+        <a href="mailto:sarthak1807verma@gmail.com">sarthak1807verma@gmail.com</a>
+        or <a href="mailto:ee23b104@smail.iitm.ac.in">ee23b104@smail.iitm.ac.in</a>.
+        Happy to talk about research, quant roles, or anything on this page.</p>
+      <p class="muted">Phone: +91 91137 98592</p>
     </section>
 
-  </main>
+    <footer>
+      <span>Sarthak Verma · Chennai</span>
+      <span>Updated Oct 2026</span>
+    </footer>
 
-  <footer class="footer">
-    <div class="footer-container font-mono">
-      <p>&copy; 2026 Sarthak Verma. Designed with technical minimalism.</p>
-      <p>IIT Madras — Chennai, India</p>
-    </div>
-  </footer>
+  </div>
 
   <script src="script.js"></script>
+  <script src="figs.js"></script>
 </body>
 </html>

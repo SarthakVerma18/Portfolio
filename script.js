@@ -4,13 +4,30 @@
 
   /* ---------- theme ---------- */
   const toggle = document.querySelector(".theme-toggle");
-  toggle.addEventListener("click", () => {
-    const next = root.dataset.theme === "dark" ? "light" : "dark";
+  function applyTheme(next) {
     root.dataset.theme = next;
     try { localStorage.setItem("theme", next); } catch (e) {}
     lattice.refreshColors();
     background.refreshColors();
     document.dispatchEvent(new Event("themechange"));
+  }
+  // The new theme spreads out from the toggle like ink, using a view
+  // transition clipped to a growing circle. Falls back to an instant swap.
+  toggle.addEventListener("click", () => {
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    if (!document.startViewTransition || reduceMotion) { applyTheme(next); return; }
+    const b = toggle.getBoundingClientRect();
+    const x = b.left + b.width / 2, y = b.top + b.height / 2;
+    const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    root.classList.add("theme-swap");
+    const vt = document.startViewTransition(() => applyTheme(next));
+    vt.ready.then(() => {
+      root.animate(
+        { clipPath: ["circle(0px at " + x + "px " + y + "px)", "circle(" + r + "px at " + x + "px " + y + "px)"] },
+        { duration: 650, easing: "cubic-bezier(.6, 0, .2, 1)", pseudoElement: "::view-transition-new(root)" }
+      );
+    });
+    vt.finished.finally(() => root.classList.remove("theme-swap"));
   });
 
   /* ---------- header state + reading progress ---------- */

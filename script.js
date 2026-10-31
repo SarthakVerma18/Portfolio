@@ -1,6 +1,16 @@
 (function () {
   const root = document.documentElement;
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const probe = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  // Resolve a theme token (OKLCH) to [r, g, b] for canvas drawing.
+  function tokenRGB(name) {
+    probe.clearRect(0, 0, 1, 1);
+    probe.fillStyle = "#000";
+    probe.fillStyle = getComputedStyle(root).getPropertyValue(name).trim();
+    probe.fillRect(0, 0, 1, 1);
+    return Array.from(probe.getImageData(0, 0, 1, 1).data.slice(0, 3));
+  }
+  const rgbStr = (c, a) => a == null ? "rgb(" + c.join(",") + ")" : "rgba(" + c.join(",") + "," + a + ")";
 
   /* ---------- theme ---------- */
   const toggle = document.querySelector(".theme-toggle");
@@ -64,20 +74,6 @@
     if (el) spy.observe(el);
   });
 
-  /* ---------- reveal on scroll ---------- */
-  const revealables = document.querySelectorAll("section > .entry, section > table, section > h2, .now");
-  const reveal = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add("in");
-        reveal.unobserve(e.target);
-      }
-    });
-  }, { rootMargin: "0px 0px -8% 0px" });
-  revealables.forEach(el => {
-    el.classList.add("reveal");
-    reveal.observe(el);
-  });
 
   /* ---------- Fig. 1: metasurface lens ----------
      Hexagonal lattice of nanopillars. Each pillar's radius encodes the
@@ -95,14 +91,14 @@
     let wl = 0;
 
     let W = 0, H = 0, dpr = 1, pitch = 18, pillars = [];
-    let ink = "#000", accent = "#f00";
+    let ink = "rgb(0,0,0)", accent = "rgb(0,0,0)";
     const focus = { x: 0, y: 0 }, target = { x: 0, y: 0 };
     let pointerInside = false, visible = true, running = false, t0 = performance.now();
 
     function refreshColors() {
       const cs = getComputedStyle(root);
-      ink = cs.getPropertyValue("--ink").trim();
-      accent = cs.getPropertyValue("--accent").trim();
+      ink = rgbStr(tokenRGB("--color-ink"));
+      accent = rgbStr(tokenRGB("--color-accent"));
       if (!running) draw();
     }
 
@@ -161,9 +157,9 @@
       ctx.globalAlpha = 1;
 
       readout.textContent =
-        "λ = " + WAVELENGTHS[wl] + " nm · f = " + FOCAL_UM + " µm · pitch " + PITCH_NM +
-        " nm · focus (" + ((focus.x - W / 2) * s).toFixed(1) + ", " + ((H / 2 - focus.y) * s).toFixed(1) +
-        ") µm · " + (pillars.length / 2) + " pillars";
+        "λ = " + WAVELENGTHS[wl] + " nm, f = " + FOCAL_UM + " µm, pitch " + PITCH_NM +
+        " nm, focus (" + ((focus.x - W / 2) * s).toFixed(1) + ", " + ((H / 2 - focus.y) * s).toFixed(1) +
+        ") µm, " + (pillars.length / 2) + " pillars";
     }
 
     function frame(now) {
@@ -213,14 +209,14 @@
     const ctx = canvas.getContext("2d");
     const finePointer = matchMedia("(pointer: fine)").matches;
     const GAP = 34, STEP = 10, SIGMA = 150, PUSH = 0.42;
-    let W = 0, H = 0, dpr = 1, rule = "#ccc", accent = "#f00";
+    let W = 0, H = 0, dpr = 1, rule = "rgb(0,0,0)", accentRGB = [0, 0, 0];
     const m = { x: -1e4, y: -1e4 }, target = { x: -1e4, y: -1e4 };
     let strength = 0, goal = 0, raf = 0;
 
     function refreshColors() {
       const cs = getComputedStyle(root);
-      rule = cs.getPropertyValue("--rule").trim();
-      accent = cs.getPropertyValue("--accent").trim();
+      rule = rgbStr(tokenRGB("--color-rule"));
+      accentRGB = tokenRGB("--color-accent");
       draw();
     }
     function resize() {
@@ -239,7 +235,7 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
       ctx.strokeStyle = rule;
-      ctx.globalAlpha = root.dataset.theme === "dark" ? 0.5 : 0.7;
+      ctx.globalAlpha = root.dataset.theme === "dark" ? 0.45 : 0.32;
       ctx.lineWidth = 1;
       ctx.beginPath();
       const near = x => strength > 0.01 && Math.abs(x - m.x) < SIGMA * 2.5;
@@ -261,8 +257,8 @@
       ctx.globalAlpha = 1;
       if (strength > 0.01) {
         const g = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, SIGMA);
-        g.addColorStop(0, accent + "14");
-        g.addColorStop(1, accent + "00");
+        g.addColorStop(0, rgbStr(accentRGB, 0.08));
+        g.addColorStop(1, rgbStr(accentRGB, 0));
         ctx.fillStyle = g;
         ctx.fillRect(m.x - SIGMA, m.y - SIGMA, SIGMA * 2, SIGMA * 2);
       }

@@ -5,18 +5,26 @@
   const root = document.documentElement;
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const C = {};
+  // Theme tokens are OKLCH; the canvas resolves any CSS colour, so read
+  // each back as rgb() once and derive alpha variants from that.
+  const probe = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  function toRGB(css) {
+    probe.clearRect(0, 0, 1, 1);
+    probe.fillStyle = "#000";
+    probe.fillStyle = css;
+    probe.fillRect(0, 0, 1, 1);
+    const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
+    return "rgb(" + r + "," + g + "," + b + ")";
+  }
   function readColors() {
     const cs = getComputedStyle(root);
     ["ink", "muted", "rule", "accent", "paper", "paper-2"].forEach(k => {
-      C[k] = cs.getPropertyValue("--" + k).trim();
+      C[k] = toRGB(cs.getPropertyValue("--color-" + k).trim());
     });
   }
   readColors();
 
-  function rgba(hex, a) {
-    const n = parseInt(hex.slice(1), 16);
-    return "rgba(" + (n >> 16 & 255) + "," + (n >> 8 & 255) + "," + (n & 255) + "," + a + ")";
-  }
+  function rgba(rgb, a) { return rgb.replace("rgb(", "rgba(").replace(")", "," + a + ")"); }
   function rng(seed) {                    // mulberry32
     return function () {
       seed |= 0; seed = seed + 0x6D2B79F5 | 0;
@@ -105,8 +113,8 @@
         const wait = ps.reduce((s, p) => s + (p.done - p.arrive - p.burst), 0) / ps.length;
         const tat = ps.reduce((s, p) => s + (p.done - p.arrive), 0) / ps.length;
         f.slices = slices; f.end = time;
-        f.readout.textContent = "quantum " + f.q + " ticks · " + switches + " context switches · avg wait " +
-          wait.toFixed(2) + " · avg turnaround " + tat.toFixed(2);
+        f.readout.textContent = "quantum " + f.q + " ticks, " + switches + " context switches, avg wait " +
+          wait.toFixed(2) + ", avg turnaround " + tat.toFixed(2);
       };
       input.addEventListener("input", update);
       update();
@@ -204,8 +212,8 @@
       ctx.fillStyle = C.muted;
       if (t2 < f.N - 8) ctx.fillText("unseen", sx(t2) + 6, 12);
 
-      f.readout.textContent = "fold " + (f.fold + 1) + "/" + f.folds + " · fit on t = " + t0 + "–" + (t1 - 1) +
-        " · score on t = " + t1 + "–" + (t2 - 1) + " · the model never trains on its own test window";
+      f.readout.textContent = "fold " + (f.fold + 1) + "/" + f.folds + ", fit on t = " + t0 + " to " + (t1 - 1) +
+        ", score on t = " + t1 + " to " + (t2 - 1) + ", the model never trains on its own test window";
     }
   };
 
@@ -243,8 +251,8 @@
           f.ideal.push(ideal); f.real.push(real); f.px.push(px);
         }
         const pct = v => (v >= 1 ? "+" : "") + ((v - 1) * 100).toFixed(1) + "%";
-        f.readout.textContent = "frictionless " + pct(ideal) + " · with " + f.cost + " bps" +
-          (f.lag ? " + 1-bar latency " : " ") + pct(real) + " · " + trades + " position flips";
+        f.readout.textContent = "frictionless " + pct(ideal) + ", with " + f.cost + " bps" +
+          (f.lag ? " + 1-bar latency " : " ") + pct(real) + ", " + trades + " position flips";
         f.render();
       };
       cost.addEventListener("input", () => { f.cost = +cost.value; out.textContent = f.cost; f.run(); });
@@ -334,8 +342,8 @@
       // temperature bar
       ctx.fillStyle = rgba(C.accent, 0.2);
       ctx.fillRect(pad, 4, (W - 2 * pad) * Math.min(1, f.T / 2), 3);
-      f.readout.textContent = "T = " + f.T.toFixed(3) + " · step " + f.steps + " · cost " + f.fn(f.x).toFixed(3) +
-        " · best " + f.fn(f.best).toFixed(3) + (f.T <= 0.004 ? " · frozen" : "");
+      f.readout.textContent = "T = " + f.T.toFixed(3) + ", step " + f.steps + ", cost " + f.fn(f.x).toFixed(3) +
+        ", best " + f.fn(f.best).toFixed(3) + (f.T <= 0.004 ? ", frozen" : "");
     }
   };
 
@@ -399,7 +407,7 @@
         ctx.fillText(name.padEnd(6) + (Math.abs(d) < 1e-4 ? "≈0" : (d > 0 ? "+" : "") + (d * 100).toFixed(d > 10 ? 0 : 2) + "%"), lx + 30, y);
       });
       f.readout.textContent = "x'' = −x over 3 periods, h = " + f.h.toFixed(2) +
-        " · energy drift shown per method · exact orbit is the grey circle";
+        ", energy drift shown per method, exact orbit is the grey circle";
     }
   };
 
